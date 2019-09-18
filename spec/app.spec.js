@@ -73,8 +73,68 @@ describe("/api", () => {
             expect(body.msg).to.equal("Article not found");
           });
       });
-      it("GET: status 200 returns an article with correct keys", () => {
-        return require(app).get("/api/articles/1");
+      it("PATCH: status 200 responds with an article when no input is given", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({})
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.votes).to.equal(100);
+          });
+      });
+      it("PATCH: status 400 responds with an error message when article Id is invalid", () => {
+        return request(app)
+          .patch("/api/articles/abd")
+          .send({ inc_votes: 456 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Invalid input - number is required");
+          });
+      });
+      it("PATCH: status 400 responds with an error message when inc_votes value is not a number", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "abc" })
+          .expect(400)
+          .then(({ body }) => {
+            // console.log(body);
+            expect(body.msg).to.equal("Invalid input - number is required");
+          });
+      });
+      it("GET: status 200 returns an article object with correct keys", () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.have.keys(
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            );
+          });
+      });
+    });
+    describe("/:article_id/comments", () => {
+      it.only("POST: status 201 returns a comment object with correct keys", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ username: "lurker", body: "Yes, I know what you mean" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment).to.have.keys(
+              "comment_id",
+              "article_id",
+              "author",
+              "body",
+              "votes",
+              "created_at"
+            );
+          });
       });
     });
   });

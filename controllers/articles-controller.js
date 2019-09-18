@@ -1,4 +1,8 @@
-const { updateVotesByArticleId } = require("../models/articles-model");
+const {
+  updateVotesByArticleId,
+  sendArticleById
+} = require("../models/articles-model");
+const { insertCommentByArticleId } = require("../models/comments-model");
 
 exports.patchVotesByArticleId = (req, res, next) => {
   const { article_id } = req.params;
@@ -8,4 +12,25 @@ exports.patchVotesByArticleId = (req, res, next) => {
       res.status(200).send({ article });
     })
     .catch(next);
+};
+
+exports.getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  sendArticleById(article_id).then(([article]) => {
+    // console.log(article, "------ARTICLE CONTROLLER");
+    res.status(200).send({ article });
+  });
+};
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const comment = req.body;
+  comment.article_id = article_id;
+  comment.author = comment.username;
+  delete comment.username;
+  insertCommentByArticleId(comment)
+    .then(([comment]) => {
+      console.log(comment);
+      res.status(201).send({ comment });
+    })
+    .catch(console.log);
 };
