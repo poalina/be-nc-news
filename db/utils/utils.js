@@ -21,7 +21,6 @@ exports.formatComments = (comments, articleRef) => {
     newElement.article_id = articleRef[newElement["belongs_to"]];
     delete newElement["belongs_to"];
     delete newElement["created_by"];
-    console.log(newElement);
     return newElement;
   });
 };

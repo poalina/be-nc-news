@@ -132,25 +132,43 @@ describe("makeRefObj", () => {
   });
 });
 
-describe.only("formatComments", () => {
+describe("formatComments", () => {
   it("returns an empty array, when passed an empty array", () => {
     expect(formatComments([])).to.eql([]);
   });
-  // it("returns a new array, when passed an  array", () => {
-  //   const input = [
-  //     {
-  //       body: "Lobster pot",
-  //       belongs_to: "Living in the shadow of a great man",
-  //       created_by: "icellusedkars",
-  //       votes: 0,
-  //       created_at: 1322138163389
-  //     }
-  //   ];
-  //   const actual = formatComments(input);
-  //   const expected = [];
-  //   expect(actual).to.eql(expected);
-  // });
-  it("returns a new array with formated comment. for a single object", () => {
+  it("returns a new array with formatted comments, when passed a single object array and does not mutate an original input", () => {
+    const input = [
+      {
+        body: "Lobster pot",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 0,
+        created_at: 1322138163389
+      }
+    ];
+    const articleRef = { "Living in the shadow of a great man": 13 };
+    const actual = formatComments(input, articleRef);
+    const expected = [
+      {
+        body: "Lobster pot",
+        article_id: 13,
+        author: "icellusedkars",
+        votes: 0,
+        created_at: new Date(1322138163389)
+      }
+    ];
+    expect(actual).to.eql(expected);
+    expect(input).to.eql([
+      {
+        body: "Lobster pot",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 0,
+        created_at: 1322138163389
+      }
+    ]);
+  });
+  it("when passed a multiple objects array, returns a new array with formatted comments", () => {
     const commentData = [
       {
         body:
@@ -159,18 +177,35 @@ describe.only("formatComments", () => {
         created_by: "butter_bridge",
         votes: 16,
         created_at: 1511354163389
+      },
+      {
+        body: "Lobster pot",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 0,
+        created_at: 1322138163389
       }
     ];
-    const articleRef = { "They're not exactly dogs, are they?": 5 };
+    const articleRef = {
+      "They're not exactly dogs, are they?": 8,
+      "Living in the shadow of a great man": 13
+    };
     const actual = formatComments(commentData, articleRef);
     const expected = [
       {
         body:
           "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        article_id: 5,
+        article_id: 8,
         author: "butter_bridge",
         votes: 16,
         created_at: new Date(1511354163389)
+      },
+      {
+        body: "Lobster pot",
+        article_id: 13,
+        author: "icellusedkars",
+        votes: 0,
+        created_at: new Date(1322138163389)
       }
     ];
     expect(actual).to.eql(expected);
