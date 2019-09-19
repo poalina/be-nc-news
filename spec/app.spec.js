@@ -64,15 +64,6 @@ describe("/api", () => {
             expect(body.article.votes).to.equal(556);
           });
       });
-      it("PATCH: status 404 responds with an error message when article does not exist", () => {
-        return request(app)
-          .patch("/api/articles/7894")
-          .send({ inc_votes: 456 })
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("Article not found");
-          });
-      });
       it("PATCH: status 200 responds with an article when no input is given", () => {
         return request(app)
           .patch("/api/articles/1")
@@ -80,6 +71,15 @@ describe("/api", () => {
           .expect(200)
           .then(({ body }) => {
             expect(body.article.votes).to.equal(100);
+          });
+      });
+      it("PATCH: status 404 responds with an error message when article does not exist", () => {
+        return request(app)
+          .patch("/api/articles/7894")
+          .send({ inc_votes: 456 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Article not found");
           });
       });
       it("PATCH: status 400 responds with an error message when article Id is invalid", () => {
@@ -97,7 +97,6 @@ describe("/api", () => {
           .send({ inc_votes: "abc" })
           .expect(400)
           .then(({ body }) => {
-            // console.log(body);
             expect(body.msg).to.equal("Invalid input - number is required");
           });
       });
@@ -269,6 +268,66 @@ describe("/api", () => {
     it("DELETE: status 400 and responds with an error message when comment Id is invalid", () => {
       return request(app)
         .delete("/api/comments/notANumber")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Invalid input - number is required");
+        });
+    });
+    it("PATCH: status 200 and responds with an updated comment for comment with votes: 68", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: 68 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment.votes).to.equal(168);
+          expect(body.comment).to.contain.keys(
+            "comment_id",
+            "author",
+            "body",
+            "article_id"
+          );
+        });
+    });
+    it("PATCH: status 200 and responds with an updated comment for comment with votes: -100", () => {
+      return request(app)
+        .patch("/api/comments/4")
+        .send({ inc_votes: 68 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment.votes).to.equal(-32);
+        });
+    });
+    it("PATCH: status 200 and responds with a not updated comment when no input is given", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({})
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment.votes).to.equal(100);
+        });
+    });
+    it("PATCH: status 404 and responds with an error message when comment does not exist", () => {
+      return request(app)
+        .patch("/api/comments/39393")
+        .send({ inc_votes: 68 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Comment not found");
+        });
+    });
+    it("PATCH: status 400 and responds with an error message when comment ID is invalid", () => {
+      return request(app)
+        .patch("/api/comments/notValid")
+        .send({ inc_votes: 68 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Invalid input - number is required");
+        });
+    });
+    it("PATCH: status 400 and responds with an error message when inc_votes value is not a number", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "not a number" })
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).to.equal("Invalid input - number is required");

@@ -55,10 +55,27 @@ exports.removeCommentById = comment_id => {
     .from("comments")
     .where("comment_id", comment_id)
     .del()
-    .then(comment => {
-      if (!comment) {
+    .then(deletedComment => {
+      if (!deletedComment) {
         return Promise.reject({ status: 404, msg: "Comment does not exist" });
       }
       return "Deleted";
+    });
+};
+
+exports.updateVotesByCommentId = (comment_id, inc_votes) => {
+  return connection
+    .increment("votes", inc_votes || 0)
+    .into("comments")
+    .where("comment_id", "=", comment_id)
+    .returning("*")
+    .then(comment => {
+      if (!comment.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Comment not found"
+        });
+      }
+      return comment;
     });
 };

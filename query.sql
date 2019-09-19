@@ -1,3 +1,3 @@
 \c nc_news_test
 
-select * from users 
+select votes from comments where comment_id = 4
