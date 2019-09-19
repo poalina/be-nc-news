@@ -28,7 +28,7 @@ describe("/api", () => {
           .get("/api/toppics")
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).to.equal("Route not found");
+            expect(body.msg).to.equal("Page not found");
           });
       });
     });
@@ -146,13 +146,13 @@ describe("/api", () => {
             expect(comment.body).to.equal("Yes, I know what you mean");
           });
       });
-      it("POST: status 404 responds with an error message when article does not exist", () => {
+      it.only("POST: status 404 responds with an error message when article does not exist", () => {
         return request(app)
           .post("/api/articles/992/comments")
           .send({ username: "lurker", body: "Yes, I know what you mean" })
-          .expect(404)
+          .expect(400)
           .then(({ body }) => {
-            expect(body.msg).to.equal("Article does not exist");
+            expect(body.msg).to.equal("Data does not exist");
           });
       });
       it("POST: status 400 responds with an error message when article id is invalid", () => {
