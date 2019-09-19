@@ -4,9 +4,9 @@ const request = require("supertest");
 const { expect } = require("chai");
 const connection = require("../db/connection");
 
-// const chai = require("chai");
-//const chaiSorted = require("chai-sorted");
-//chai.use(chaiSorted);
+const chai = require("chai");
+const chaiSorted = require("chai-sorted");
+chai.use(chaiSorted);
 
 describe("/api", () => {
   beforeEach(() => connection.seed.run());
@@ -120,7 +120,7 @@ describe("/api", () => {
       });
     });
     describe("/:article_id/comments", () => {
-      it.only("POST: status 201 returns a comment object with correct keys", () => {
+      it("POST: status 201 returns a comment object with correct keys", () => {
         return request(app)
           .post("/api/articles/1/comments")
           .send({ username: "lurker", body: "Yes, I know what you mean" })
@@ -134,6 +134,84 @@ describe("/api", () => {
               "votes",
               "created_at"
             );
+          });
+      });
+      it("POST: status 201 returns a comment object with correct key-value pairs", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ username: "lurker", body: "Yes, I know what you mean" })
+          .expect(201)
+          .then(({ body: { comment } }) => {
+            expect(comment.author).to.equal("lurker");
+            expect(comment.article_id).to.equal(1);
+            expect(comment.body).to.equal("Yes, I know what you mean");
+          });
+      });
+      it("POST: status 404 responds with an error message when article does not exist", () => {
+        return request(app)
+          .post("/api/articles/992/comments")
+          .send({ username: "lurker", body: "Yes, I know what you mean" })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Article does not exist");
+          });
+      });
+      it("POST: status 400 responds with an error message when article id is invalid", () => {
+        return request(app)
+          .post("/api/articles/hello/comments")
+          .send({ username: "lurker", body: "Yes, I know what you mean" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Invalid input - number is required");
+          });
+      });
+      it("POST: status 400 responds with an error message when given comment has wrong keys", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ wrong_key: "lurker", body: "Yes, I know what you mean" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Incorrect input");
+          });
+      });
+      it("GET: status 200 responds with all comments for the given article", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body, "---body");
+            expect(body.comments).to.contain.keys(
+              "comment_id",
+              "created_at",
+              "body",
+              "votes",
+              "author"
+            );
+          });
+      });
+      it("GET: status 200 responds with an empty object when the given article does not have comments", () => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(({ body }) => {
+            // console.log(body, "====body spec");
+            expect([body]).to.be.an("array");
+          });
+      });
+      it("GET: status 404 responds with an error message when article does not exist", () => {
+        return request(app)
+          .get("/api/articles/992/comments")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Article does not exist");
+          });
+      });
+      it.only("GET: status 400 responds with an error message when article id is invalid", () => {
+        return request(app)
+          .get("/api/articles/hello/comments")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Invalid input - number is required");
           });
       });
     });

@@ -2,7 +2,10 @@ const {
   updateVotesByArticleId,
   sendArticleById
 } = require("../models/articles-model");
-const { insertCommentByArticleId } = require("../models/comments-model");
+const {
+  insertCommentByArticleId,
+  selectAllCommentsByArticleId
+} = require("../models/comments-model");
 
 exports.patchVotesByArticleId = (req, res, next) => {
   const { article_id } = req.params;
@@ -29,8 +32,17 @@ exports.postCommentByArticleId = (req, res, next) => {
   delete comment.username;
   insertCommentByArticleId(comment)
     .then(([comment]) => {
-      console.log(comment);
       res.status(201).send({ comment });
     })
-    .catch(console.log);
+    .catch(next);
+};
+
+exports.getAllCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  selectAllCommentsByArticleId(article_id)
+    .then(([comments]) => {
+      console.log(comments, "====COMMENTS ART CONTR");
+      res.status(200).send({ comments });
+    })
+    .catch(next);
 };
