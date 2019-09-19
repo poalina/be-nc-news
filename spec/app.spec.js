@@ -179,8 +179,8 @@ describe("/api", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(({ body }) => {
-            console.log(body, "---body");
-            expect(body.comments).to.contain.keys(
+            //console.log(body, "---body");
+            expect(body.comments[0]).to.contain.keys(
               "comment_id",
               "created_at",
               "body",
@@ -189,13 +189,13 @@ describe("/api", () => {
             );
           });
       });
-      it("GET: status 200 responds with an empty object when the given article does not have comments", () => {
+      it("GET: status 200 responds with an article when the given article does not have comments", () => {
         return request(app)
           .get("/api/articles/2/comments")
           .expect(200)
           .then(({ body }) => {
             // console.log(body, "====body spec");
-            expect([body]).to.be.an("array");
+            expect(body.comments).to.be.an("array");
           });
       });
       it("GET: status 404 responds with an error message when article does not exist", () => {
@@ -203,10 +203,10 @@ describe("/api", () => {
           .get("/api/articles/992/comments")
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).to.equal("Article does not exist");
+            expect(body.msg).to.equal("Article not found");
           });
       });
-      it.only("GET: status 400 responds with an error message when article id is invalid", () => {
+      it("GET: status 400 responds with an error message when article id is invalid", () => {
         return request(app)
           .get("/api/articles/hello/comments")
           .expect(400)
@@ -214,6 +214,65 @@ describe("/api", () => {
             expect(body.msg).to.equal("Invalid input - number is required");
           });
       });
+      it("GET: status 200 comments are sorted by 'created_at' column (default) ", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=created_at")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.sortedBy("created_at", {
+              descending: true
+            });
+          });
+      });
+      it("GET: status 200 comments are sorted by 'votes' (descending by default) ", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=votes")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.sortedBy("votes", {
+              descending: true
+            });
+          });
+      });
+      it("GET: status 200 comments are sorted ascending by default (created_at) ", () => {
+        return request(app)
+          .get("/api/articles/1/comments?order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.sortedBy("created_at");
+          });
+      });
+      it("GET: status 200 comments are sorted ascending by body ", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=comment_id&order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.be.sortedBy("comment_id");
+          });
+      });
+    });
+  });
+  describe("/comments/:comments_id", () => {
+    it("DELETE: status 204 removes a comment with the given id", () => {
+      return request(app)
+        .delete("/api/comments/2")
+        .expect(204);
+    });
+    it("DELETE: status 404 responds with an error message when comment does not exist", () => {
+      return request(app)
+        .delete("/api/comments/987")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Comment does not exist");
+        });
+    });
+    it("DELETE: status 400 and responds with an error message when comment Id is invalid", () => {
+      return request(app)
+        .delete("/api/comments/notANumber")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Invalid input - number is required");
+        });
     });
   });
 });

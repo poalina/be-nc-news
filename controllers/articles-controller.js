@@ -39,9 +39,10 @@ exports.postCommentByArticleId = (req, res, next) => {
 
 exports.getAllCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectAllCommentsByArticleId(article_id)
-    .then(([comments]) => {
-      console.log(comments, "====COMMENTS ART CONTR");
+  const { order, sort_by } = req.query;
+  selectAllCommentsByArticleId(article_id, sort_by, order)
+    .then(comments => {
+      //console.log(comments, "====COMMENTS ART CONTR");
       res.status(200).send({ comments });
     })
     .catch(next);
