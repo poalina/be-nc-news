@@ -311,7 +311,7 @@ describe("/api", () => {
             expect(articles).to.have.lengthOf(3);
           });
       });
-      it.only("7 GET/ status 200 and responds with articles filtered by 'topic'  ", () => {
+      it("7 GET/ status 200 and responds with articles filtered by 'topic'  ", () => {
         return request(app)
           .get("/api/articles?topic=mitch")
           .expect(200)

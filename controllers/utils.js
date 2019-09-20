@@ -20,7 +20,6 @@ exports.checkIfAuthorExist = author => {
     .from("articles")
     .where({ author })
     .then(author => {
-      console.log(author, "===23 utils author");
       if (!author.length) {
         return Promise.reject({ status: 404, msg: "Author not found" });
       }
@@ -34,7 +33,6 @@ exports.checkIfTopicExist = topic => {
     .from("topics")
     .where({ topic })
     .then(topic => {
-      console.log(topic, "===37 utils topic");
       if (!topic.length) {
         return Promise.reject({ status: 404, msg: "Topic not found" });
       }
