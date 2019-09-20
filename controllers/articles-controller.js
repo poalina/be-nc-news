@@ -9,9 +9,9 @@ const {
 } = require("../models/comments-model");
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles()
+  const { sort_by, order, author, topic } = req.query;
+  selectAllArticles(sort_by, order, author, topic)
     .then(articles => {
-      //console.log("====I AM IN ARTICLE CONTR");
       res.status(200).send({ articles });
     })
     .catch(next);

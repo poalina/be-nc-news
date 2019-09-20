@@ -1,11 +1,50 @@
 const connection = require("../db/connection");
 
-exports.selectAllArticles = (sort_by = "created_at", order = "desc") => {
-  //console.log("=====I AM IN ARTICLE MODEL");
+const {
+  checkIfTopicExist,
+  checkIfAuthorExist
+} = require("../controllers/utils");
+
+exports.selectAllArticles = (
+  sort_by = "created_at",
+  order = "desc",
+  author,
+  topic
+) => {
   return connection
-    .select("*")
+    .select("articles.*")
     .from("articles")
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .count("comments.article_id AS comment_count")
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .groupBy("articles.article_id")
+    .modify(queryBuilder => {
+      if (author) queryBuilder.where({ "articles.author": author });
+      if (topic) queryBuilder.where({ topic });
+    })
+    .then(articles => {
+      if (!articles.length && author && topic) {
+        return Promise.all([
+          articles,
+          checkIfAuthorExist(author),
+          checkIfTopicExist(topic)
+        ]);
+      }
+
+      if (!articles.length && author) {
+        return Promise.all([articles, checkIfAuthorExist(author)]);
+      }
+      if (!articles.length && topic) {
+        return Promise.all([articles, checkIfTopicExist(topic)]);
+      }
+      return [articles];
+    })
+    .then(([articles]) => {
+      return articles.map(element => {
+        element.comment_count = +element.comment_count;
+        return element;
+      });
+    });
 };
 
 exports.updateVotesByArticleId = (article_id, inc_votes) => {
@@ -35,7 +74,6 @@ exports.sendArticleById = article_id => {
     .groupBy("articles.article_id")
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .then(article => {
-      // console.log(article, "=======MODEL ARTICLE");
       if (!article.length) {
         return Promise.reject({
           status: 404,

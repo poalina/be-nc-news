@@ -1,3 +1,3 @@
 \c nc_news_test
 
-select votes from comments where comment_id = 4
+select topic from articles where topic = 'mitch'

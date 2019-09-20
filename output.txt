@@ -1,6 +1,16 @@
 You are now connected to database "nc_news_test" as user "paulina".
- votes 
+ topic 
 -------
-  -100
-(1 row)
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+ mitch
+(11 rows)
 

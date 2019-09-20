@@ -248,13 +248,12 @@ describe("/api", () => {
           });
       });
     });
-    describe.only("?query", () => {
+    describe("?query", () => {
       it("1 GET/ status: 200 and responds with an array of articles objects containing correct properties", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
-            //console.log(body, "=======257 BODY from spec");
             expect(body.articles).to.be.an("array");
             expect(body.articles[0]).to.be.a("object");
             expect(body.articles[0]).to.contain.keys(
@@ -263,8 +262,8 @@ describe("/api", () => {
               "article_id",
               "topic",
               "created_at",
-              "votes"
-              //"comment_count"
+              "votes",
+              "comment_count"
             );
           });
       });
@@ -304,16 +303,24 @@ describe("/api", () => {
             expect(body.articles).to.be.sortedBy("article_id");
           });
       });
-      // it("GET: status 200 comments are sorted by 'votes' (descending by default) ", () => {
-      //   return request(app)
-      //     .get("/api/articles/1/comments?sort_by=votes")
-      //     .expect(200)
-      //     .then(({ body }) => {
-      //       expect(body.comments).to.be.sortedBy("votes", {
-      //         descending: true
-      //       });
-      //     });
-      // });
+      it("6 GET/ status 200 and responds with articles filtered by 'author'  ", () => {
+        return request(app)
+          .get("/api/articles?author=rogersop")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.lengthOf(3);
+          });
+      });
+      it.only("7 GET/ status 200 and responds with articles filtered by 'topic'  ", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            const topic = articles.every(article => article.topic === "mitch");
+            expect(articles).to.have.lengthOf(11);
+            expect(topic).to.be.true;
+          });
+      });
     });
   });
   describe("/comments/:comments_id", () => {

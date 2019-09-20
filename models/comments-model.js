@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { checkIfArticleExist } = require("../controllers/utils");
 
 exports.insertCommentByArticleId = comment => {
   return connection
@@ -27,25 +28,12 @@ exports.selectAllCommentsByArticleId = (
     })
     .then(comments => {
       if (!comments.length && article_id) {
-        return Promise.all([comments, checkArticleExist(article_id)]);
+        return Promise.all([comments, checkIfArticleExist(article_id)]);
       }
       return [comments];
     })
     .then(([comments]) => {
       return comments;
-    });
-};
-const checkArticleExist = article_id => {
-  return connection
-    .select("*")
-    .from("articles")
-    .where({ article_id })
-    .then(articles => {
-      if (!articles.length) {
-        return Promise.reject({ status: 404, msg: "Article not found" });
-      }
-
-      return true;
     });
 };
 
