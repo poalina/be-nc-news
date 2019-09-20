@@ -4,16 +4,23 @@ exports.handleCustomErrors = (err, req, res, next) => {
   else next(err);
 };
 
-exports.handlePsqlErrors = (err, req, res, next) => {
-  const psqlBadRequestCodes = {
+exports.handlePsqlErrors404 = (err, req, res, next) => {
+  const psqlBadRequestCodes404 = ["23503"];
+  if (psqlBadRequestCodes404.includes(err.code))
+    res.status(404).send({ msg: "Data does not exist" });
+  else next(err);
+};
+
+exports.handlePsqlErrors400 = (err, req, res, next) => {
+  const psqlBadRequestCodes400 = {
     "22P02": "Invalid input - number is required",
-    "23503": "Data does not exist",
+    //"23503": "Data does not exist",
     "42703": "Incorrect input"
   };
-  if (psqlBadRequestCodes[err.code])
+  if (psqlBadRequestCodes400[err.code])
     res
       .status(400)
-      .send({ msg: psqlBadRequestCodes[err.code] || "Bad Request" });
+      .send({ msg: psqlBadRequestCodes400[err.code] || "Bad Request" });
   else next(err);
 };
 

@@ -1,4 +1,5 @@
 const {
+  selectAllArticles,
   updateVotesByArticleId,
   sendArticleById
 } = require("../models/articles-model");
@@ -6,6 +7,15 @@ const {
   insertCommentByArticleId,
   selectAllCommentsByArticleId
 } = require("../models/comments-model");
+
+exports.getAllArticles = (req, res, next) => {
+  selectAllArticles()
+    .then(articles => {
+      //console.log("====I AM IN ARTICLE CONTR");
+      res.status(200).send({ articles });
+    })
+    .catch(next);
+};
 
 exports.patchVotesByArticleId = (req, res, next) => {
   const { article_id } = req.params;

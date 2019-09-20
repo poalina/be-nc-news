@@ -1,5 +1,13 @@
 const connection = require("../db/connection");
 
+exports.selectAllArticles = (sort_by = "created_at", order = "desc") => {
+  //console.log("=====I AM IN ARTICLE MODEL");
+  return connection
+    .select("*")
+    .from("articles")
+    .orderBy(sort_by, order);
+};
+
 exports.updateVotesByArticleId = (article_id, inc_votes) => {
   return connection
     .increment("votes", inc_votes || 0)

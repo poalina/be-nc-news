@@ -18,9 +18,9 @@ describe("/api", () => {
         return request(app)
           .get("/api/topics")
           .expect(200)
-          .then(res => {
-            expect(res.body.topics).to.be.an("array");
-            expect(res.body.topics[0]).to.contain.keys("slug", "description");
+          .then(({ body }) => {
+            expect(body.topics).to.be.an("array");
+            expect(body.topics[0]).to.contain.keys("slug", "description");
           });
       });
       it("status: 404 responds with an error message, when route is not found", () => {
@@ -146,11 +146,11 @@ describe("/api", () => {
             expect(comment.body).to.equal("Yes, I know what you mean");
           });
       });
-      it.only("POST: status 404 responds with an error message when article does not exist", () => {
+      it("POST: status 404 responds with an error message when article does not exist", () => {
         return request(app)
           .post("/api/articles/992/comments")
           .send({ username: "lurker", body: "Yes, I know what you mean" })
-          .expect(400)
+          .expect(404)
           .then(({ body }) => {
             expect(body.msg).to.equal("Data does not exist");
           });
@@ -178,7 +178,6 @@ describe("/api", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(({ body }) => {
-            //console.log(body, "---body");
             expect(body.comments[0]).to.contain.keys(
               "comment_id",
               "created_at",
@@ -193,7 +192,6 @@ describe("/api", () => {
           .get("/api/articles/2/comments")
           .expect(200)
           .then(({ body }) => {
-            // console.log(body, "====body spec");
             expect(body.comments).to.be.an("array");
           });
       });
@@ -249,6 +247,73 @@ describe("/api", () => {
             expect(body.comments).to.be.sortedBy("comment_id");
           });
       });
+    });
+    describe.only("?query", () => {
+      it("1 GET/ status: 200 and responds with an array of articles objects containing correct properties", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            //console.log(body, "=======257 BODY from spec");
+            expect(body.articles).to.be.an("array");
+            expect(body.articles[0]).to.be.a("object");
+            expect(body.articles[0]).to.contain.keys(
+              "author",
+              "title",
+              "article_id",
+              "topic",
+              "created_at",
+              "votes"
+              //"comment_count"
+            );
+          });
+      });
+      it("2 GET/ status: 404 and responds with an error message, when route is not found", () => {
+        return request(app)
+          .get("/api/wrongRoute")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Page not found");
+          });
+      });
+      it("3 GET/ status 200 and responds with articles sorted descending (default) by date (default) ", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.sortedBy("created_at", {
+              descending: true
+            });
+          });
+      });
+      it("4 GET/ status 200 and responds with articles sorted descending (default) by 'votes' ", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=desc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.sortedBy("votes", {
+              descending: true
+            });
+          });
+      });
+      it("5 GET/ status 200 and responds with articles sorted ascending by 'article_id'  ", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.sortedBy("article_id");
+          });
+      });
+      // it("GET: status 200 comments are sorted by 'votes' (descending by default) ", () => {
+      //   return request(app)
+      //     .get("/api/articles/1/comments?sort_by=votes")
+      //     .expect(200)
+      //     .then(({ body }) => {
+      //       expect(body.comments).to.be.sortedBy("votes", {
+      //         descending: true
+      //       });
+      //     });
+      // });
     });
   });
   describe("/comments/:comments_id", () => {

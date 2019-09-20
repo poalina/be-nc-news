@@ -3,7 +3,8 @@ const app = express();
 const apiRouter = require("./routes/api-router");
 const {
   handleCustomErrors,
-  handlePsqlErrors,
+  handlePsqlErrors400,
+  handlePsqlErrors404,
   handleServerErrors
 } = require("./errors/errors");
 
@@ -15,7 +16,8 @@ app.all("/*", (req, res, next) =>
 );
 
 app.use(handleCustomErrors);
-app.use(handlePsqlErrors);
+app.use(handlePsqlErrors404);
+app.use(handlePsqlErrors400);
 app.use(handleServerErrors);
 
 // app.use((err, req, res, next) => {
