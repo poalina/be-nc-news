@@ -31,7 +31,7 @@ exports.checkIfTopicExist = topic => {
   return connection
     .select("*")
     .from("topics")
-    .where({ topic })
+    .where({ slug: topic })
     .then(topic => {
       if (!topic.length) {
         return Promise.reject({ status: 404, msg: "Topic not found" });

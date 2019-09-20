@@ -34,23 +34,21 @@ describe("/api", () => {
     });
   });
   describe("/users/:username", () => {
-    describe("GET", () => {
-      it("status: 200 returns an user object with correct keys", () => {
-        return request(app)
-          .get("/api/users/rogersop")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.user).to.have.keys("username", "avatar_url", "name");
-          });
-      });
-      it("status: 404 responds with an error message when user does not exist", () => {
-        return request(app)
-          .get("/api/users/notexist")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("User not found");
-          });
-      });
+    it("GET/ status: 200 returns an user object with correct keys", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).to.have.keys("username", "avatar_url", "name");
+        });
+    });
+    it("GET/ status: 404 responds with an error message when user does not exist", () => {
+      return request(app)
+        .get("/api/users/notexist")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("User not found");
+        });
     });
   });
   describe("/articles", () => {
@@ -248,7 +246,7 @@ describe("/api", () => {
           });
       });
     });
-    describe("?query", () => {
+    describe.only("?query", () => {
       it("1 GET/ status: 200 and responds with an array of articles objects containing correct properties", () => {
         return request(app)
           .get("/api/articles")
@@ -275,7 +273,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Page not found");
           });
       });
-      it("3 GET/ status 200 and responds with articles sorted descending (default) by date (default) ", () => {
+      it("3 GET/ status 200 and responds with articles sorted descending (default) by date (default)", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
@@ -285,7 +283,7 @@ describe("/api", () => {
             });
           });
       });
-      it("4 GET/ status 200 and responds with articles sorted descending (default) by 'votes' ", () => {
+      it("4 GET/ status 200 and responds with articles sorted descending (default) by 'votes'", () => {
         return request(app)
           .get("/api/articles?sort_by=votes&order=desc")
           .expect(200)
@@ -295,7 +293,7 @@ describe("/api", () => {
             });
           });
       });
-      it("5 GET/ status 200 and responds with articles sorted ascending by 'article_id'  ", () => {
+      it("5 GET/ status 200 and responds with articles sorted ascending by 'article_id'", () => {
         return request(app)
           .get("/api/articles?sort_by=article_id&order=asc")
           .expect(200)
@@ -303,7 +301,7 @@ describe("/api", () => {
             expect(body.articles).to.be.sortedBy("article_id");
           });
       });
-      it("6 GET/ status 200 and responds with articles filtered by 'author'  ", () => {
+      it("6 GET/ status 200 and responds with articles filtered by 'author'", () => {
         return request(app)
           .get("/api/articles?author=rogersop")
           .expect(200)
@@ -311,7 +309,7 @@ describe("/api", () => {
             expect(articles).to.have.lengthOf(3);
           });
       });
-      it("7 GET/ status 200 and responds with articles filtered by 'topic'  ", () => {
+      it("7 GET/ status 200 and responds with articles filtered by 'topic'", () => {
         return request(app)
           .get("/api/articles?topic=mitch")
           .expect(200)
@@ -319,6 +317,60 @@ describe("/api", () => {
             const topic = articles.every(article => article.topic === "mitch");
             expect(articles).to.have.lengthOf(11);
             expect(topic).to.be.true;
+          });
+      });
+      it("8 GET/ status 200 and responds with articles filtered by 'topic' and 'author", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch&author=rogersop")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            const topic = articles.every(article => article.topic === "mitch");
+            const author = articles.every(
+              article => article.author === "rogersop"
+            );
+            expect(articles).to.have.lengthOf(2);
+            expect(topic).to.be.true;
+            expect(author).to.be.true;
+          });
+      });
+      it("9 GET/ status: 200 and responds with an empty array when filtered by existing 'topic' and 'author', but there is no articles ", () => {
+        return request(app)
+          .get("/api/articles?topic=paper&author=rogersop")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an("array");
+          });
+      });
+      it("10 GET/ status: 404 and responds with an error message, when query (topic) does not match any topic", () => {
+        return request(app)
+          .get("/api/articles?topic=doesntExist")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Topic not found");
+          });
+      });
+      it("11 GET/ status: 404 and responds with an error message, when query (author) does not match any author", () => {
+        return request(app)
+          .get("/api/articles?author=doesntExist")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Author not found");
+          });
+      });
+      xit("12 GET/ status: 400 and an error message, for an invalid query", () => {
+        return request(app)
+          .get("/api/articles?order=badRequest")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("13 GET/ status: 400 and an error message, for an invalid query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=columnDoesntExist")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Incorrect input");
           });
       });
     });

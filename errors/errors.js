@@ -1,5 +1,5 @@
 exports.handleCustomErrors = (err, req, res, next) => {
-  //console.log(err, "------ERROR from APP");
+  console.log(err, "------ERROR from APP");
   if (err.status) res.status(err.status).send({ msg: err.msg });
   else next(err);
 };
@@ -14,7 +14,6 @@ exports.handlePsqlErrors404 = (err, req, res, next) => {
 exports.handlePsqlErrors400 = (err, req, res, next) => {
   const psqlBadRequestCodes400 = {
     "22P02": "Invalid input - number is required",
-    //"23503": "Data does not exist",
     "42703": "Incorrect input"
   };
   if (psqlBadRequestCodes400[err.code])
