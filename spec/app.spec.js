@@ -8,11 +8,19 @@ const chai = require("chai");
 const chaiSorted = require("chai-sorted");
 chai.use(chaiSorted);
 
-describe("/api", () => {
+describe("/app", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
-  describe("INVALID METHODS", () => {
+  describe("/api", () => {
+    it("GET/ status: 200 and responds with JSON describing all the available endpoints on API", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.an("object");
+        });
+    });
     it("status: 405 and responds with an error message for invalid HTTP method", () => {
       const invalidMethods = ["patch", "put", "delete"];
       const methodPromises = invalidMethods.map(method => {
@@ -77,10 +85,10 @@ describe("/api", () => {
       it("PATCH: status 200 returns a new updated object", () => {
         return request(app)
           .patch("/api/articles/1")
-          .send({ inc_votes: 456 })
+          .send({ inc_votes: 1 })
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.votes).to.equal(556);
+            expect(body.article.votes).to.equal(101);
           });
       });
       it("PATCH: status 200 responds with an article when no input is given", () => {
@@ -95,7 +103,7 @@ describe("/api", () => {
       it("PATCH: status 404 responds with an error message when article does not exist", () => {
         return request(app)
           .patch("/api/articles/7894")
-          .send({ inc_votes: 456 })
+          .send({ inc_votes: 1 })
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).to.equal("Article not found");
@@ -104,7 +112,7 @@ describe("/api", () => {
       it("PATCH: status 400 responds with an error message when article Id is invalid", () => {
         return request(app)
           .patch("/api/articles/abd")
-          .send({ inc_votes: 456 })
+          .send({ inc_votes: 1 })
           .expect(400)
           .then(({ body }) => {
             expect(body.msg).to.equal("Invalid input - number is required");
@@ -387,7 +395,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Author not found");
           });
       });
-      it.only("13 GET/ status: 400 and an error message, for an invalid query", () => {
+      it("13 GET/ status: 400 and an error message, for an invalid query", () => {
         return request(app)
           .get("/api/articles?order=badRequest")
           .expect(400)
