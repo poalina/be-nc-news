@@ -42,6 +42,7 @@ exports.selectAllArticles = (
     .then(([articles]) => {
       return articles.map(element => {
         element.comment_count = +element.comment_count;
+        console.log(element, "====Art model 45");
         return element;
       });
     });

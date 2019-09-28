@@ -354,7 +354,16 @@ describe("/api", () => {
             expect(author).to.be.true;
           });
       });
-      it("9 GET/ status: 200 and responds with an empty array when filtered by existing 'topic' and 'author', but there is no articles ", () => {
+      it("9 GET/ status: 200 and responds with an empty array when filtered by existing 'topic', but there is no articles ", () => {
+        // filtered by existing 'topic' and 'author', but there is no articles ????
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an("array");
+          });
+      });
+      it("10 GET/ status: 200 and responds with an empty array when filtered by existing 'author', but there is no articles ", () => {
         return request(app)
           .get("/api/articles?topic=paper&author=rogersop")
           .expect(200)
@@ -362,7 +371,7 @@ describe("/api", () => {
             expect(articles).to.be.an("array");
           });
       });
-      it("10 GET/ status: 404 and responds with an error message, when query (topic) does not match any topic", () => {
+      it("11 GET/ status: 404 and responds with an error message, when query (topic) does not match any topic", () => {
         return request(app)
           .get("/api/articles?topic=doesntExist")
           .expect(404)
@@ -370,7 +379,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Topic not found");
           });
       });
-      it("11 GET/ status: 404 and responds with an error message, when query (author) does not match any author", () => {
+      it("12 GET/ status: 404 and responds with an error message, when query (author) does not match any author", () => {
         return request(app)
           .get("/api/articles?author=doesntExist")
           .expect(404)
@@ -378,7 +387,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Author not found");
           });
       });
-      it("12 GET/ status: 400 and an error message, for an invalid query", () => {
+      it.only("13 GET/ status: 400 and an error message, for an invalid query", () => {
         return request(app)
           .get("/api/articles?order=badRequest")
           .expect(400)
@@ -386,7 +395,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Bad request");
           });
       });
-      it("13 GET/ status: 400 and an error message, for an invalid query", () => {
+      it("14 GET/ status: 400 and an error message, for an invalid query", () => {
         return request(app)
           .get("/api/articles?sort_by=columnDoesntExist")
           .expect(400)

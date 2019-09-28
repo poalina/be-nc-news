@@ -113,7 +113,7 @@ describe("makeRefObj", () => {
   it("returns an empty object, when passed an empty array", () => {
     expect(makeRefObj([])).to.eql({});
   });
-  it("returns a new object, when passed a single object array and not mutes a original data", () => {
+  it("returns a new object, when passed a single object array and does not mutate an original data", () => {
     const input = [{ article_id: 1, title: "A" }];
     const actual = makeRefObj(input);
     const expected = { A: 1 };
