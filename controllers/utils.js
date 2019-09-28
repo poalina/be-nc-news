@@ -17,8 +17,8 @@ exports.checkIfArticleExist = article_id => {
 exports.checkIfAuthorExist = author => {
   return connection
     .select("*")
-    .from("articles")
-    .where({ author })
+    .from("users")
+    .where({ username: author })
     .then(author => {
       if (!author.length) {
         return Promise.reject({ status: 404, msg: "Author not found" });

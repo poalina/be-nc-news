@@ -12,7 +12,7 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
-  describe.only("INVALID METHODS", () => {
+  describe("INVALID METHODS", () => {
     it("status: 405 and responds with an error message for invalid HTTP method", () => {
       const invalidMethods = ["patch", "put", "delete"];
       const methodPromises = invalidMethods.map(method => {
@@ -36,24 +36,22 @@ describe("/api", () => {
   });
 
   describe("/topics", () => {
-    describe("GET", () => {
-      it("status: 200 responds with an array of topics objects containing correct properties", () => {
-        return request(app)
-          .get("/api/topics")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.topics).to.be.an("array");
-            expect(body.topics[0]).to.contain.keys("slug", "description");
-          });
-      });
-      it("status: 404 responds with an error message, when route is not found", () => {
-        return request(app)
-          .get("/api/toppics")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("Page not found");
-          });
-      });
+    it("GET/ status: 200 responds with an array of topics objects containing correct properties", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.topics).to.be.an("array");
+          expect(body.topics[0]).to.contain.keys("slug", "description");
+        });
+    });
+    it("GET/ status: 404 responds with an error message, when route is not found", () => {
+      return request(app)
+        .get("/api/toppics")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Page not found");
+        });
     });
   });
   describe("/users/:username", () => {

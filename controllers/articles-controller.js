@@ -31,14 +31,13 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   sendArticleById(article_id)
     .then(([article]) => {
-      // console.log(article, "------ARTICLE CONTROLLER");
       res.status(200).send({ article });
     })
     .catch(next);
 };
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  const comment = req.body;
+  const comment = { ...req.body };
   comment.article_id = article_id;
   comment.author = comment.username;
   delete comment.username;
