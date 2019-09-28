@@ -29,10 +29,12 @@ exports.patchVotesByArticleId = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  sendArticleById(article_id).then(([article]) => {
-    // console.log(article, "------ARTICLE CONTROLLER");
-    res.status(200).send({ article });
-  });
+  sendArticleById(article_id)
+    .then(([article]) => {
+      // console.log(article, "------ARTICLE CONTROLLER");
+      res.status(200).send({ article });
+    })
+    .catch(next);
 };
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;

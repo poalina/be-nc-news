@@ -5,7 +5,8 @@ const {
   handleCustomErrors,
   handlePsqlErrors400,
   handlePsqlErrors404,
-  handleServerErrors
+  handleServerErrors,
+  handle405Error
 } = require("./errors/errors");
 
 app.use(express.json());
@@ -19,6 +20,9 @@ app.use(handleCustomErrors);
 app.use(handlePsqlErrors404);
 app.use(handlePsqlErrors400);
 app.use(handleServerErrors);
+app.use(handle405Error);
+
+//app.all('/*', (req, res, next))
 
 // app.use((err, req, res, next) => {
 //   //console.log(err, "------ERROR from APP");

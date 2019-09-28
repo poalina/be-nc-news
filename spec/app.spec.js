@@ -12,6 +12,29 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
+  describe.only("INVALID METHODS", () => {
+    it("status: 405 and responds with an error message for invalid HTTP method", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method not allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+    it("DELETE/ status: 405 and responds with an error message for invalid HTTP method", () => {
+      return request(app)
+        .delete("/api/articles")
+        .expect(405)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Method not allowed");
+        });
+    });
+  });
+
   describe("/topics", () => {
     describe("GET", () => {
       it("status: 200 responds with an array of topics objects containing correct properties", () => {
@@ -246,7 +269,7 @@ describe("/api", () => {
           });
       });
     });
-    describe.only("?query", () => {
+    describe("?query", () => {
       it("1 GET/ status: 200 and responds with an array of articles objects containing correct properties", () => {
         return request(app)
           .get("/api/articles")
@@ -357,7 +380,7 @@ describe("/api", () => {
             expect(body.msg).to.equal("Author not found");
           });
       });
-      xit("12 GET/ status: 400 and an error message, for an invalid query", () => {
+      it("12 GET/ status: 400 and an error message, for an invalid query", () => {
         return request(app)
           .get("/api/articles?order=badRequest")
           .expect(400)

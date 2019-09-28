@@ -5,6 +5,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors404 = (err, req, res, next) => {
+  //console.log(err, "------ERROR from APP 404");
   const psqlBadRequestCodes404 = ["23503"];
   if (psqlBadRequestCodes404.includes(err.code))
     res.status(404).send({ msg: "Data does not exist" });
@@ -12,6 +13,7 @@ exports.handlePsqlErrors404 = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors400 = (err, req, res, next) => {
+  //console.log(err, "------ERROR from APP 400");
   const psqlBadRequestCodes400 = {
     "22P02": "Invalid input - number is required",
     "42703": "Incorrect input"
@@ -25,4 +27,9 @@ exports.handlePsqlErrors400 = (err, req, res, next) => {
 
 exports.handleServerErrors = (err, req, res, next) => {
   res.status(500).send({ msg: "Internal Server Error" });
+};
+
+exports.handle405Error = (req, res, next) => {
+  // console.log(err, "------ERROR from APP 405");
+  res.status(405).send({ msg: "Method not allowed" });
 };
