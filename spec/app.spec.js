@@ -363,7 +363,6 @@ describe("/app", () => {
           });
       });
       it("9 GET/ status: 200 and responds with an empty array when filtered by existing 'topic', but there is no articles ", () => {
-        // filtered by existing 'topic' and 'author', but there is no articles ????
         return request(app)
           .get("/api/articles?topic=paper")
           .expect(200)
