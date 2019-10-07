@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const apiRouter = require("./routes/api-router");
 const {
   handleCustomErrors,
@@ -9,6 +10,7 @@ const {
   handle405Error
 } = require("./errors/errors");
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api", apiRouter);
