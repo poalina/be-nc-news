@@ -344,7 +344,7 @@ describe("/app", () => {
           .expect(200)
           .then(({ body: { articles } }) => {
             const topic = articles.every(article => article.topic === "mitch");
-            expect(articles).to.have.lengthOf(11);
+            expect(articles).to.have.lengthOf(10);
             expect(topic).to.be.true;
           });
       });
@@ -408,6 +408,14 @@ describe("/app", () => {
           .expect(400)
           .then(({ body }) => {
             expect(body.msg).to.equal("Incorrect input");
+          });
+      });
+      it("15 GET/ status: 200 and returns 10 articles by default", () => {
+        return request(app)
+          .get("/api/articles?limit=10")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.have.lengthOf(10);
           });
       });
     });

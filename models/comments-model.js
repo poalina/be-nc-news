@@ -23,9 +23,7 @@ exports.selectAllCommentsByArticleId = (
     .select("*")
     .from("comments")
     .orderBy(sort_by, order)
-    .modify(queryBuilder => {
-      if (article_id) queryBuilder.where({ article_id });
-    })
+    .where({ article_id })
     .then(comments => {
       if (!comments.length && article_id) {
         return Promise.all([comments, checkIfArticleExist(article_id)]);

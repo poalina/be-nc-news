@@ -15,6 +15,7 @@ exports.checkIfArticleExist = article_id => {
 };
 
 exports.checkIfAuthorExist = author => {
+  if (!author) return true;
   return connection
     .select("*")
     .from("users")
@@ -28,6 +29,7 @@ exports.checkIfAuthorExist = author => {
 };
 
 exports.checkIfTopicExist = topic => {
+  if (!topic) return true;
   return connection
     .select("*")
     .from("topics")

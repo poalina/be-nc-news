@@ -9,12 +9,22 @@ exports.selectAllArticles = (
   sort_by = "created_at",
   order = "desc",
   author,
-  topic
+  topic,
+  limit = 10,
+  p = 1
 ) => {
+  if (!["desc", "asc"].includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request"
+    });
+  }
   return connection
     .select("articles.*")
     .from("articles")
     .orderBy(sort_by, order)
+    .limit(limit)
+    .offset((p - 1) * limit)
     .count("comments.article_id AS comment_count")
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
@@ -23,19 +33,12 @@ exports.selectAllArticles = (
       if (topic) queryBuilder.where({ topic });
     })
     .then(articles => {
-      if (!articles.length && author && topic) {
+      if (!articles.length) {
         return Promise.all([
           articles,
           checkIfAuthorExist(author),
           checkIfTopicExist(topic)
         ]);
-      }
-
-      if (!articles.length && author) {
-        return Promise.all([articles, checkIfAuthorExist(author)]);
-      }
-      if (!articles.length && topic) {
-        return Promise.all([articles, checkIfTopicExist(topic)]);
       }
       return [articles];
     })
