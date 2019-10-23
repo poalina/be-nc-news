@@ -1,5 +1,9 @@
 const connection = require("../db/connection");
 
+exports.selectAllUsers = () => {
+  return connection.select("*").from("users");
+};
+
 exports.selectUserByUsername = username => {
   return connection
     .select("*")

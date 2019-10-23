@@ -21,6 +21,14 @@ describe("/app", () => {
           expect(body).to.be.an("object");
         });
     });
+    it("GET/ status: 404 and responds with an error message, when route is not found", () => {
+      return request(app)
+        .get("/api/wrongRoute")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Page not found");
+        });
+    });
     it("status: 405 and responds with an error message for invalid HTTP method", () => {
       const invalidMethods = ["patch", "put", "delete"];
       const methodPromises = invalidMethods.map(method => {
@@ -53,31 +61,41 @@ describe("/app", () => {
           expect(body.topics[0]).to.contain.keys("slug", "description");
         });
     });
-    it("GET/ status: 404 responds with an error message, when route is not found", () => {
-      return request(app)
-        .get("/api/toppics")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("Page not found");
-        });
-    });
   });
-  describe("/users/:username", () => {
-    it("GET/ status: 200 returns an user object with correct keys", () => {
+
+  describe("/users", () => {
+    it("GET/ status: 200 and responds with an array of users objects containing correct properties", () => {
       return request(app)
-        .get("/api/users/rogersop")
+        .get("/api/users")
         .expect(200)
         .then(({ body }) => {
-          expect(body.user).to.have.keys("username", "avatar_url", "name");
+          expect(body.users).to.be.an("array");
+          expect(body.users[0]).to.contain.keys(
+            "username",
+            "avatar_url",
+            "name"
+          );
         });
     });
-    it("GET/ status: 404 responds with an error message when user does not exist", () => {
-      return request(app)
-        .get("/api/users/notexist")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).to.equal("User not found");
-        });
+    it("POST/ status: 201 and returns", () => {});
+
+    describe("/:username", () => {
+      it("GET/ status: 200 returns an user object with correct keys", () => {
+        return request(app)
+          .get("/api/users/rogersop")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.user).to.have.keys("username", "avatar_url", "name");
+          });
+      });
+      it("GET/ status: 404 responds with an error message when user does not exist", () => {
+        return request(app)
+          .get("/api/users/notexist")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("User not found");
+          });
+      });
     });
   });
   describe("/articles", () => {
