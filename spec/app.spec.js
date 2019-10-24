@@ -91,6 +91,38 @@ describe("/app", () => {
           expect(body).to.have.keys("username", "avatar_url", "name");
         });
     });
+    it("POST/ status: 201 and returns a new user with correct keys-value pairs", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          username: "bobby",
+          avatar_url:
+            "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555921064/shape/mentalfloss/spongebob_0_0.jpg",
+          name: "Bobby McBill"
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.username).to.equal("bobby");
+          expect(body.avatar_url).to.equal(
+            "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555921064/shape/mentalfloss/spongebob_0_0.jpg"
+          );
+          expect(body.name).to.equal("Bobby McBill");
+        });
+    });
+    it("POST/ status 400 and responds with an error message when an input has wrong keys", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          wrongKey: "bobby",
+          avatar_url:
+            "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555921064/shape/mentalfloss/spongebob_0_0.jpg",
+          name: "Bobby McBill"
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Incorrect input");
+        });
+    });
 
     describe("/:username", () => {
       it("GET/ status: 200 returns an user object with correct keys", () => {
