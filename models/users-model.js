@@ -19,3 +19,13 @@ exports.selectUserByUsername = username => {
       return user;
     });
 };
+
+exports.createNewUser = user => {
+  return connection
+    .insert(user)
+    .into("users")
+    .returning("*")
+    .then(([user]) => {
+      return user;
+    });
+};

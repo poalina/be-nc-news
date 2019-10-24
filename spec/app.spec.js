@@ -63,7 +63,7 @@ describe("/app", () => {
     });
   });
 
-  describe("/users", () => {
+  describe.only("/users", () => {
     it("GET/ status: 200 and responds with an array of users objects containing correct properties", () => {
       return request(app)
         .get("/api/users")
@@ -77,7 +77,20 @@ describe("/app", () => {
           );
         });
     });
-    it("POST/ status: 201 and returns", () => {});
+    it("POST/ status: 201 and returns a new user with correct keys", () => {
+      return request(app)
+        .post("/api/users")
+        .send({
+          username: "bobby",
+          avatar_url:
+            "https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1555921064/shape/mentalfloss/spongebob_0_0.jpg",
+          name: "Bobby McBill"
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).to.have.keys("username", "avatar_url", "name");
+        });
+    });
 
     describe("/:username", () => {
       it("GET/ status: 200 returns an user object with correct keys", () => {
