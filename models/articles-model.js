@@ -50,6 +50,16 @@ exports.selectAllArticles = (
     });
 };
 
+exports.postNewArticle = article => {
+  return connection
+    .insert(article)
+    .into("articles")
+    .returning("*")
+    .then(([article]) => {
+      return article;
+    });
+};
+
 exports.updateVotesByArticleId = (article_id, inc_votes) => {
   return connection
     .increment("votes", inc_votes || 0)

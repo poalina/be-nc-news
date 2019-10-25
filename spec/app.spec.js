@@ -63,7 +63,7 @@ describe("/app", () => {
     });
   });
 
-  describe.only("/users", () => {
+  describe("/users", () => {
     it("GET/ status: 200 and responds with an array of users objects containing correct properties", () => {
       return request(app)
         .get("/api/users")
@@ -144,6 +144,37 @@ describe("/app", () => {
     });
   });
   describe("/articles", () => {
+    it.only("POST: status 201 and returns an article object with correct keys", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          title: "Living in the shadow",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging"
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).to.have.keys(
+            "article_id",
+            "title",
+            "body",
+            "votes",
+            "topic",
+            "author",
+            "created_at"
+            // "comment_count"
+          );
+        })
+        .then(() => {
+          return request(app)
+            .get("/api/articles/13")
+            .then(({ body }) => {
+              console.log(body, "body spec");
+            });
+        });
+    });
+    it("POST: status 201 ...............", () => {});
     describe("/:article_id", () => {
       it("PATCH: status 200 returns a new updated object", () => {
         return request(app)
