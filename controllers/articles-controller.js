@@ -19,11 +19,10 @@ exports.getAllArticles = (req, res, next) => {
 };
 
 exports.addNewArticle = (req, res, next) => {
-  const article = req.body;
-  // console.log(article, "article");
-  postNewArticle(article)
+  const { body } = req;
+
+  postNewArticle(body)
     .then(article => {
-      // console.log(article, "article controller");
       res.status(201).send({ article });
     })
     .catch(next);

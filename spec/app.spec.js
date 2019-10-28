@@ -144,7 +144,7 @@ describe("/app", () => {
     });
   });
   describe("/articles", () => {
-    it.only("POST: status 201 and returns an article object with correct keys", () => {
+    it("POST/ status 201 and returns an article object with correct keys", () => {
       return request(app)
         .post("/api/articles")
         .send({
@@ -163,18 +163,41 @@ describe("/app", () => {
             "topic",
             "author",
             "created_at"
-            // "comment_count"
           );
-        })
-        .then(() => {
-          return request(app)
-            .get("/api/articles/13")
-            .then(({ body }) => {
-              console.log(body, "body spec");
-            });
         });
     });
-    it("POST: status 201 ...............", () => {});
+    it("POST/ status 201 and returns a new article with correct keys-value pairs", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          title: "Living in the shadow",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging"
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { title, topic, author } = body.article;
+          expect(title).to.equal("Living in the shadow");
+          expect(topic).to.equal("mitch");
+          expect(author).to.equal("butter_bridge");
+          expect(body.article.body).to.equal(
+            "I find this existence challenging"
+          );
+        });
+    });
+    it("POST/ status 400 and responds with an error message when an input has wrong keys", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          wrongKey: "bobby",
+          name: "Bobby McBill"
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Incorrect input");
+        });
+    });
     describe("/:article_id", () => {
       it("PATCH: status 200 returns a new updated object", () => {
         return request(app)
