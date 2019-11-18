@@ -34,6 +34,19 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "weegembump",
+          "name": "Gemma Bump",
+          "avatar_url": "https: //www.upandrunning.co.uk/media/catalog/product/cache/1/image/650x/040ec09b1e35df139433887a97daa66f/m/r/mr-bump.jpg"
+        }
+      ]
+    }
+  },
   "GET /api/users/:username": {
     "description": "serves an user object with a given username_id",
     "queries": [],
