@@ -1,4 +1,4 @@
-# be-nc-newsNews API
+#News API
 An API for accessing and contributing to the latest developments.
 
 Getting Started
@@ -26,7 +26,7 @@ This section details the steps required in order to run the development environm
 
 After forking this repository, clone its contents to your local system by using the following terminal command:
 
-$ git clone https://github.com/Kaploniak/nc-news
+$ git clone https://github.com/poalina/be-nc-news
 Open this repository in your favoured code editor.
 
 At this point, it is essential to create a local knexfile.js file in the root directory. The following code can be inserted into this:
